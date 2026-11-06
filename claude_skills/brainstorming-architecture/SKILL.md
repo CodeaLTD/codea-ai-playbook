@@ -1,6 +1,6 @@
 ---
 name: brainstorming-architecture
-description: Use when brainstorming, designing, or reviewing a system or software architecture, whether starting from an existing blueprint or architecture doc, from collected requirements, or from a rough idea; when comparing architectural options, patterns, or technologies (build vs buy, sync vs async, monolith vs services, which database, queue, or vendor); or when asked how a system would look, what its trade-offs are, or for an architecture diagram
+description: Use when brainstorming, designing, or evolving a system or software architecture together with the user, whether starting from an existing blueprint or architecture doc, from collected requirements, or from a rough idea; when comparing architectural options, patterns, or technologies (build vs buy, sync vs async, monolith vs services, which database, queue, or vendor); or when asked how a system would look, what its trade-offs are, or for an architecture diagram. Not for auditing a finished design (validating-architecture) or fact-checking a plan (verifying-plans)
 ---
 
 # Brainstorming Architecture

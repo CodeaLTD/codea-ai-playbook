@@ -51,13 +51,13 @@ Layers from top to bottom: Edge & Ingress → Runtime & Orchestration → Storag
                                                                 ▼
 [ Agent Runtime / State Machine ] ◄── state checkpoints ──► [ State Store ]
        ├──> 0. Input Guardrail      Safety check · Prompt Injection Scan · Intent Schema
-       ├──> 1. Context Assembly    Vector search + Cache lookup + User Preferences
-       ├──> 2. Planning Loop        Query decomposition · Task bounded retries
-       ├──> 3. Tool Execution       AST validation · Cost dry-run · Scope verification
-       │       └──> Execution Sink  ──REST/gRPC──► [ Downstream Data Warehouse / APIs ]
-       ├──> 4. Result Guardrail     PII masking · K-anonymity filter · Row caps
-       ├──> 5. Synthesis/Composer   Persona enforcement · Grounding verification
-       └──> 6. Tool Router          Human-in-the-Loop (HITL) Gate ⇄ User Approval
+       ├──> 1. Context Assembly     Vector search + Cache lookup + User Preferences
+       ├──> 2. Planning Loop        Task decomposition · Bounded retries
+       ├──> 3. Tool Execution       Argument validation · Cost estimate · Permission check
+       │       └──> Execution Sink  ──REST/gRPC──► [ Downstream APIs / Data Stores ]
+       ├──> 4. Output Guardrail     PII masking · Secret scan · Size caps
+       ├──> 5. Response Composer    Tone rules · Grounding check
+       └──> 6. Approval Gate        Human-in-the-Loop (HITL) ⇄ User Approval
 
 [ Infrastructure & Observability ]
   ├── Gateway:      Rate Limiter · Retry + Jitter · Fallback Provider
@@ -69,7 +69,7 @@ OFFLINE / CONTROL PLANES
 [ CI/CD & Eval Framework ]   ──► Red-teaming & Benchmarks ──► Deployment Gate
 ```
 
-### Option sketch (Opening and Comparison turns)
+### Option sketch (Options and Comparison turns)
 
 At most 15 lines, with a title line. Show only the parts where the options differ, plus their direct neighbours. Collapse shared parts into one box, such as `[ App (shared) ]`.
 

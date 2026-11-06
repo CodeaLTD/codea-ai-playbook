@@ -21,7 +21,7 @@ Tags: from the source | mapped by us (stated choice = [DECIDED], listed open poi
 | 06 | [<Feature>](06-<feature>.md) | Feature | ... | 05 | Blocked by Q3 |
 | 18 | [Observability](18-observability.md) | Signals | ... | 05–17 | Ready |
 
-Status: Ready · Blocked by Q# · In progress · Done · Done (manual pending). The builder updates it as work moves.
+Status: Ready · Blocked by Q# · In progress · Done · Done (manual pending). The owner updates it as work moves; builders never write it.
 
 ## Why this order
 3-6 bullets. Name where the order differs from the source's own phases, and what that costs.

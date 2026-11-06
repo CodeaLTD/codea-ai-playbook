@@ -1,6 +1,6 @@
 ---
 name: skill-evaluator
-description: Evaluate a completed execution of another skill from the record of that execution. Use after a target skill has run, when the user asks to review, grade, audit, or score how well it was followed. Read-only; never re-runs the task or repeats its actions. Returns PASS, FAIL, or INCONCLUSIVE with a 0-100 score, per-category findings, and recommendations.
+description: Use when another skill has already run and the user asks to review, grade, audit, or score how well that execution followed the skill, from this conversation, a transcript file, or a pasted record. Not for running the target skill, and not for reviewing a skill's text before it is used
 allowed-tools: Read, Grep, Glob
 ---
 
@@ -12,7 +12,7 @@ Reviews the **first execution** of a target skill and reports PASS, FAIL, or INC
 
 ## Install
 
-Claude Code only discovers skills in `.claude/skills/` (project) or `~/.claude/skills/` (user). This folder is the playbook copy. To use it, copy `skill-evaluator/` into one of those locations.
+This folder is the playbook copy. To install it, see [../README.md](../README.md).
 
 ## Flow
 

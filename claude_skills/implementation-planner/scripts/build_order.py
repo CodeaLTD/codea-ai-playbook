@@ -79,8 +79,9 @@ def read_plan(path: Path) -> dict:
             name, _, value = part.partition(":")
             fields[name.strip()] = value.strip()
     # Lines that name other plans, outside the header and the Scope "Out" list; and the
-    # unticked criteria, with whether their Check needs a person.
-    mentions, open_acs, in_out = [], [], False
+    # unticked criteria, with whether their Check needs a person. A Check line belongs to
+    # the criterion just above it, so a ticked criterion's Check never marks an open one.
+    mentions, open_acs, in_out, last_open = [], [], False, False
     for n, line in enumerate(text.splitlines(), 1):
         if line.startswith("## ") or re.match(r"\s*- \*\*In:\*\*", line):
             in_out = False
@@ -89,9 +90,10 @@ def read_plan(path: Path) -> dict:
         if not in_out and not line.startswith("Group:"):
             mentions += [(n, m) for m in MENTION.findall(line)]
         if ac := AC_ITEM.match(line):
-            if ac.group(1) == " ":
+            last_open = ac.group(1) == " "
+            if last_open:
                 open_acs.append({"id": ac.group(2), "text": ac.group(3), "manual": False})
-        elif open_acs and re.match(r"\s*- Check:", line) and "(manual)" in line:
+        elif last_open and re.match(r"\s*- Check:", line) and "(manual)" in line:
             open_acs[-1]["manual"] = True
     return {
         "name": title.group(1).strip() if title else path.stem,
@@ -155,8 +157,10 @@ def schedule(deps: dict) -> tuple[list, dict, dict, dict]:
     return order, wave, latest, succ
 
 
-def what_if(deps: dict, changes: list[str], known: set[str]) -> int:
-    """Print how the waves change if some plans' Depends on were replaced. Writes nothing."""
+def what_if(deps: dict, changes: list[str], known: set[str], implied: str | None = None) -> int:
+    """Print how the waves change if some plans' Depends on were replaced. Writes nothing.
+
+    The --implied plan stays a dependency of every later plan, as in the real build."""
     new = {p: set(ds) for p, ds in deps.items()}
     for item in changes:
         p, _, value = item.partition("=")
@@ -164,6 +168,8 @@ def what_if(deps: dict, changes: list[str], known: set[str]) -> int:
             print(f"--set {item}: unknown plan", file=sys.stderr)
             return 1
         new[p] = ids_in(value, known) & known
+        if implied and implied in known and key(implied) < key(p):
+            new[p].add(implied)
     try:
         _, wave, latest, _ = schedule(deps)
         _, wave2, latest2, _ = schedule(new)
@@ -185,14 +191,17 @@ def what_if(deps: dict, changes: list[str], known: set[str]) -> int:
 
 
 def verify(path: Path, text: str) -> int:
-    """Check a filled file still holds every line the script writes, in order, and no FILL."""
+    """Check a filled file still holds every line the script writes, in order, and no FILL.
+
+    Blank lines are not compared: deleting a FILL comment leaves two in a row, and a
+    Markdown formatter may merge them."""
     lines = path.read_text(encoding="utf-8").splitlines()
     if left := [n for n, line in enumerate(lines, 1) if "FILL:" in line]:
         print(f"{path}: FILL left on line(s) {', '.join(map(str, left))}")
         return 1
     it = iter(lines)
     for line in text.splitlines():
-        if line.startswith("<!-- FILL:"):
+        if line.startswith("<!-- FILL:") or not line.strip():
             continue
         if not any(line == got for got in it):
             print(f"{path}: changed or missing script line: {line!r}")
@@ -274,7 +283,7 @@ def main() -> int:
                 findings.append(f"Plan {p} depends on plan {d}, a later number.")
 
     if a.set:
-        return what_if(deps, a.set, known)
+        return what_if(deps, a.set, known, a.implied)
     try:
         order, wave, latest, succ = schedule(deps)
     except ValueError as cycle:
@@ -505,13 +514,14 @@ def main() -> int:
         "",
         "## How to run a wave",
         "",
-        "- One branch or worktree per plan (superpowers:using-git-worktrees), each built by "
-        "implementation-agent with the plan named.",
+        "- One builder per plan: run implementing-plans with the plan named. It pulls `main` and "
+        "builds on its own branch, `plan/NN-<name>`. Builders working at the same time each need "
+        "their own worktree (superpowers:using-git-worktrees).",
         "- Merge each plan when it is done. The plan that merges second rebases first; if both "
         "add a schema migration, it re-chains its migration onto the one already merged, so "
         "there is one head.",
-        "- Run the full suite after each merge. Then set the plan's Status in `00-index.md` and "
-        "rebuild this file.",
+        "- Run the full suite after each merge. Then the owner sets the plan's Status in "
+        "`00-index.md` and in the plan header (builders never write Status), and rebuilds this file.",
         "- After the last wave, work the Release checklist in `00-index.md`.",
         "",
         "## Dependency findings",

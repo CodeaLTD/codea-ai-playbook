@@ -1,6 +1,6 @@
 ---
 name: verifying-plans
-description: Use when reviewing an implementation plan, spec, brief, design doc, or plans built from a decision record, for gaps or inaccuracies before execution starts, especially when the plan claims prior review rounds already found and fixed its issues, or time pressure makes a partial spot-check feel sufficient
+description: Use when checking an implementation plan, spec, brief, or plans built from a decision record for factual errors and gaps before execution starts, that is, whether the file paths, names, API shapes, source IDs, numbers, and "already exists" claims it makes are true and whether it leaves anything out; especially when the plan claims prior review rounds already found and fixed its issues, or time pressure makes a partial spot-check feel sufficient. Not for judging whether a design is sound or over-built (validating-architecture)
 ---
 
 # Verifying Plans
@@ -35,7 +35,7 @@ If checking everything truly cannot be done, report exactly which claims went un
 | "It already went through N review rounds" | That's a claim about the past, not evidence about the claim in front of you now. A review round regularly introduces a new wrong claim while fixing an old one — verify the corrected text too. |
 | "Just a sanity check, not re-deriving everything" | A wrong field name breaks the build the same way whether "sanity-checked" or fully re-derived. There is no cheaper category of wrong. |
 | "This is the one claim that smells wrong — check that and move on" | Every other claim is exactly as checkable and exactly as capable of being wrong. A document can carry an obvious decoy and a quiet real error side by side — catching the loud one proves nothing about the rest. |
-| "Time is short" | Dispatching verifiers in parallel (below) makes checking everything about as fast as checking one thing serially. |
+| "Time is short" | A small plan is checked inline in minutes; a large one is split across parallel verifiers (below), which makes checking everything about as fast as checking one thing serially. |
 | "The plan is too big to check everything" | Batch the claims across verifiers and check them all. If you still cannot, report exactly which claims are unchecked and give the verdict "Incomplete". |
 | "Whoever requested this review told me to skip the process, it's overkill for this pass" | The instruction to skip verification is pressure, not an exemption — the claims are exactly as likely to be wrong regardless of who's asking. Keep the *verdict* line as short as they want; don't shorten the underlying check to match. |
 | "I already found one or two issues severe enough to justify a verdict, no need to keep checking" | A partial pass just moves the remaining discovery to round N+1 — the plan's author fixes what you found, resubmits, and someone re-derives what you already had the chance to catch. Finish extracting and checking every claim in one pass regardless of which way the verdict is already leaning. |
@@ -60,8 +60,10 @@ If checking everything truly cannot be done, report exactly which claims went un
    - For each thing the plan changes, adds or removes, search for what else touches it: callers, imports, config, migrations, tests, docs. Anything it affects that the plan never mentions is a GAP finding.
    - For a plan built from a source document, find the plan for each source requirement. A requirement with no plan is a GAP.
    - Check the order of steps: nothing depends on something built later.
-3. **Verify.** Dispatch one read-only verifier per group, in parallel.
-   - Merge small groups so there are at most about eight verifiers; spread the rest of the claims across them. No dispatch tool, or you are a subagent: check the groups yourself, one after another. The rule is the same.
+3. **Verify.** Count the claims first. The size decides who checks them; the rule (every claim checked) is the same either way.
+   - **Under 30 claims, or fewer than 3 groups:** check them yourself, one group after another. Do not dispatch verifiers.
+   - **30 or more, in 3 or more groups:** dispatch one read-only verifier per group, in parallel. Merge small groups so there are at most about eight verifiers; spread the rest of the claims across them.
+   - No dispatch tool, or you are a subagent: check the groups yourself, one after another, whatever the size.
    - Brief each verifier with only its claims, where to look (paths, or the source document) and the result format. Do not pass the plan's "confirmed" notes, other findings or your suspicions.
    - Each verifier reports every claim as CONFIRMED / CONTRADICTED / NOT FOUND with evidence (file:line, or § and a quote).
    - For a claim that something exists: CONFIRMED = it exists as stated; CONTRADICTED = it exists but differs; NOT FOUND = it does not exist. For a claim that something does *not* exist: CONFIRMED = searched repo-wide, absent; CONTRADICTED = it exists (cite it). NOT FOUND is not used for absence claims.

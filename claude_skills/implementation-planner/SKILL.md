@@ -11,14 +11,16 @@ Read every plan in `docs/plans/` and write `docs/plans/implementation-plan.md`: 
 
 **Core rule: the order is computed from the plans' Depends on lines, never chosen.** The script computes waves, slack, the critical path and builder lanes, and draws both diagrams. You add what needs reading: hidden dependencies, collisions, the options the index offers. You never edit a plan file, and never draw or touch a diagram by hand.
 
-Plans come from splitting-decisions-into-plans; each one is built by implementation-agent. The output's sections and how to fill them: [output-format.md](output-format.md). Read it before step 4.
+Plans come from splitting-decisions-into-plans; each one is built by implementing-plans. The output's sections and how to fill them: [output-format.md](output-format.md). Read it before step 4.
+
+**Script path:** `<skill-dir>` below is this skill's own folder, the "Base directory for this skill" Claude Code shows when the skill loads. It works wherever the skill is installed (`~/.claude/skills/`, `.claude/skills/` or a plugin). Run every command from the repo root.
 
 ## Process
 
 1. **Read `docs/plans/00-index.md` in full.** Note a plan it says every plan relies on (for example "the stack from plan 01 is implied for every plan"), and every order change it offers but does not apply (for example "plan 18 can move to just after 06").
 2. **Run the script** from the repo root. On a refresh, first copy the old file's "Owner notes".
 
-       python .claude/skills/implementation-planner/scripts/build_order.py docs/plans --implied 01 --out docs/plans/implementation-plan.md
+       python <skill-dir>/scripts/build_order.py docs/plans --implied 01 --out docs/plans/implementation-plan.md
 
    Leave out `--implied` if the index names no such plan. Exit 2 is a dependency cycle: the script writes nothing; stop and report the cycle to the owner.
 3. **Read every plan**: header, Scope In, What we build, acceptance criteria. Find hidden dependencies (below). Run the script again with `--extra PLAN:NEEDS` for each one (repeat the flag), until you find no new ones.
@@ -38,7 +40,7 @@ A plan has a hidden dependency when it uses something a lower plan builds (a tab
 
 - The script's own check passes. Use the same `--implied` and `--extra` flags as for the build: it fails on a FILL left, or on any script line (diagram, table, number) that was changed or dropped.
 
-      python .claude/skills/implementation-planner/scripts/build_order.py docs/plans --implied 01 --verify docs/plans/implementation-plan.md
+      python <skill-dir>/scripts/build_order.py docs/plans --implied 01 --verify docs/plans/implementation-plan.md
 
 - Every `--extra` you passed has a finding with its sentence. Every collision row names a pair the script listed. Every option's waves come from a `--set` run.
 - Only `implementation-plan.md` changed in `docs/plans/` (`git status docs/plans`).

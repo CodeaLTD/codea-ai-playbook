@@ -94,7 +94,7 @@ One bullet per order change that `00-index.md` offers but does not apply: what i
 
 Take the waves from the script, never from your own arithmetic. Write the change as new Depends on values and run (it writes nothing):
 
-    python .claude/skills/implementation-planner/scripts/build_order.py docs/plans --implied 01 --set 18=02-06
+    python <skill-dir>/scripts/build_order.py docs/plans --implied 01 --set 18=02-06
 
 It prints the new finish wave, every plan whose wave or slack changes, and the new waves.
 

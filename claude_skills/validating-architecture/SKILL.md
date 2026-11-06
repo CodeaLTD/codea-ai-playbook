@@ -1,6 +1,6 @@
 ---
 name: validating-architecture
-description: Use when validating or auditing an architecture, design doc, or technical plan; when asked whether a design is over-engineered, too complex, or bigger than its scale, team, or deadline need; or when looking for ways to simplify it, cut components, defer scope, or reduce moving parts without losing required capabilities
+description: Use when auditing a finished architecture, design doc, or technical plan for soundness and size; when asked whether a design is over-engineered, too complex, or bigger than its scale, team, or deadline need, or what it is missing or contradicts; or when looking for ways to simplify it, cut components, defer scope, or reduce moving parts without losing required capabilities. Not for designing options with the user (brainstorming-architecture) or checking a plan's facts against code (verifying-plans)
 ---
 
 # Validating Architecture

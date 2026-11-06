@@ -77,15 +77,20 @@ Update the index's source line and "Built on" date.
 
 **Our own IDs:** a point the source does not state, or a conflict we find between two sections of the source, gets the ID Q-NS-n. Number them once, in the index under "Gaps found", and reuse the number in every plan that uses it. Tag a conflict [CONFLICT] and a missing point [NOT SPECIFIED]. Each carries a default.
 
-**Progress:** the builder sets a plan's Status to In progress when it starts, and to Done when every criterion is ticked (Done (manual pending) when only manual ones remain). Keep these on a refresh.
+**Progress:** only the owner changes a plan's Status after the plans are written: In progress when a build starts, Done when every criterion is ticked, Done (manual pending) when only manual ones remain. Builders (implementing-plans) tick boxes but never write Status. Keep these on a refresh.
 
 ## Self-check
 
-- Coverage table: nothing missing, nothing twice.
+Run the checker from the repo root, fix what it reports, and run it again until it reports nothing. It writes nothing. `<skill-dir>` is this skill's own folder, the "Base directory for this skill" Claude Code shows when the skill loads.
+
+    python <skill-dir>/scripts/check_plans.py docs/plans --source requirements/decision.md
+
+It checks: titles and headers; 3-8 criteria per plan, AC-NN.k IDs, a Check and a Source on each; three Signals lines in every feature plan; Depends on pointing only to lower numbers; the index's Plans table against the files; Coverage with nothing twice and every tagged decision and NFR of the source present; a trigger on every "Not planned" row; and every number in the plans found in the source. For each number it reports, fix it, or remove it, or tag it [ADDED] with a line in "Gaps found".
+
+Then check by hand what a script cannot:
 - Each Signals plan sits where the source's phases, exit criteria and defaults put it; "Why this order" says where and what it costs.
-- Every "Not planned" row has a trigger from the source, or "None given" with a line in "Gaps found".
-- Search every number in the plans against the source; fix or remove the ones not found.
-- Every criterion has Check and Source. Every feature plan has three Signals lines.
+- Every "None given" trigger has a line in "Gaps found".
+- Source items without a tag or ID (a source that uses § numbers only) each land once.
 - Plain English, as in the source: short sentences, active voice, its glossary terms.
 
 ## Common mistakes
